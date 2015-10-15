@@ -21,8 +21,7 @@ public class HelloWorldTest extends Test<TestParameters>{
 	LOGGER.log(Level.INFO, "Logger says Hello World!");
 	System.out.println("Console says Hello World!");
 	result.setEnd(System.currentTimeMillis());
-	result.setStatus(STATUS.FAILURE);
-	result.setFailureMessage("TEST failed!!!");
+	result.setStatus(STATUS.SUCCESS);
 	return result;	
     }
 

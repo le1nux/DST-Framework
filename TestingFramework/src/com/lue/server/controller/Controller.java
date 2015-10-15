@@ -18,7 +18,7 @@ import com.lue.server.SchedulerDataAccessIF;
 
 public class Controller implements ControllerIF {
 
-    private final static String SCHEDULE_PATH = "schedule.json";
+//    private final static String SCHEDULE_PATH = "schedule.json";
 
     protected SchedulerDataAccessIF dataAccess;
     protected Logger logger;
@@ -34,16 +34,16 @@ public class Controller implements ControllerIF {
     public void control() {
 	ScheduleStorage scheduleStorage;
 	scheduleStorage = ScheduleStorage.generateDebugScheduleStorage(dataAccess.getScheduleRunnerMaxCount());
-	try {
-	    writeScheduleToJSONFile(SCHEDULE_PATH, scheduleStorage);
-	} catch (IOException e1) {
-	    e1.printStackTrace();
-	}
-	try {
-	    scheduleStorage = readScheduleFromJSONFile(SCHEDULE_PATH);
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
+//	try {
+//	    writeScheduleToJSONFile(SCHEDULE_PATH, scheduleStorage);
+//	} catch (IOException e1) {
+//	    e1.printStackTrace();
+//	}
+//	try {
+//	    scheduleStorage = readScheduleFromJSONFile(SCHEDULE_PATH);
+//	} catch (IOException e) {
+//	    e.printStackTrace();
+//	}
 	try {
 	    dataAccess.setScheduleStorage(scheduleStorage);
 	} catch (Exception e) {
