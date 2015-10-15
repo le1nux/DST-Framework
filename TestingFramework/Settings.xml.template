@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<settings xmlns:ns2="com.lue.client.Settings">
+    <supportedTests>
+        <supportedTestsMap>
+            <entry>
+                <key>com.lue.client.tests.HelloWorldTest</key>
+                <value>
+                    <name>com.lue.client.tests.HelloWorldTest</name>
+                </value>
+            </entry>
+            <entry>
+                <key>com.lue.client.tests.SleepTest</key>
+                <value>
+                    <params>
+                        <key xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">java.lang.Integer</key>
+                        <value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string">Dauer</value>
+                    </params>
+                    <name>com.lue.client.tests.SleepTest</name>
+                </value>
+            </entry>
+        </supportedTestsMap>
+    </supportedTests>
+</settings>

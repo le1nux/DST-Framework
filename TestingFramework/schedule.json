@@ -1,0 +1,15 @@
+{
+  "schedules" : [ "java.util.ArrayList", [ {
+    "schedule" : [ "java.util.ArrayList", [ {
+      "testKey" : "com.lue.client.tests.SleepTest",
+      "parameters" : [ "com.lue.client.tests.SleepTestParameters", {
+        "duration" : 2000
+      } ],
+      "testResult" : null
+    }, {
+      "testKey" : "com.lue.client.tests.android.InstrumentationTest",
+      "parameters" : null,
+      "testResult" : null
+    } ] ]
+  } ] ]
+}

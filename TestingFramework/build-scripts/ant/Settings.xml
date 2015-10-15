@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<settings>
+    <supportedTests>
+        <supportedTestsMap>
+            <entry>
+                <key>com.lue.client.tests.HelloWorldTest</key>
+                <value>
+                    <name>com.lue.client.tests.HelloWorldTest</name>
+                </value>
+            </entry>
+            <entry>
+                <key>com.lue.client.tests.android.InstrumentationTest</key>
+                <value>
+                    <name>com.lue.client.tests.android.InstrumentationTest</name>
+                </value>
+            </entry>
+            <entry>
+                <key>com.lue.client.tests.SleepTest</key>
+                <value>
+                    <name>com.lue.client.tests.SleepTest</name>
+                </value>
+            </entry>
+            <entry>
+                <key>com.lue.client.tests.RESTTest</key>
+                <value>
+                    <name>com.lue.client.tests.RESTTest</name>
+                </value>
+            </entry>
+        </supportedTestsMap>
+    </supportedTests>
+</settings>
