@@ -36,8 +36,7 @@ public class ScheduleRunner extends UnicastRemoteObject implements ScheduleRunne
 	logger = Logger.getLogger(ScheduleRunner.class.getName());
 	testQueue = new ArrayList<TestIF>();
 	supportedTests = getSupportedTests();
-	System.out.println(Settings.analyzeSupportedTests().toString());
-    }
+	}
 
     public void connectToScheduler(String host, int port) throws Exception {
 	scheduleRunnerId = -1;
