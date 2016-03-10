@@ -11,7 +11,8 @@ The framework supports two pre-defined tests and two dummy tests
  - REST API test using the standard HTTP Methods (GET, PUT, POST, DELETE)
  - SQL test 
  - (Hello World test)
- - Sleep test)
+ - (Sleep test)
+ 
 and is fully customizable. You can use our pre-definded tests and configure them or you can even develop your own tests. You can look into the dummy tests to get a taste of how tests work.
 
 Please contact me if you are interested in the more advanced Android test (shown in the diagram above) so I can send it to you.
@@ -31,7 +32,9 @@ start the server
 	ant -buildfile server_build.xml run
 
 start the schedule runners
+
 	ant -buildfile scheduleRunner_build.xml run
+	
 The schedule runner automatically connects to the server and waits for further instructions (e.g. what tests to perform and when). 
 
 Now its time to configure the server and start a test run. When we started our server, the server started another HTTP Tomcat server listening on port 8080 as a background thread. When we want to configure and perform our tests we always interact with the Tomcat server by communicating with its REST-API. We'll see how that works in the next few steps. 
