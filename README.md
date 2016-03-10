@@ -70,7 +70,7 @@ Payload:
 
 The server will send the tests to its schedule runners which in return will perform the tests. Afterwards they send the results back to the server which will evaluate the result and print a summary to the console. 
 
-If you want to rerun the schedule or want run a different one put the server to state UNITIALIZED and send the respective schedule to the server. 
+If you want to rerun the schedule or want run a different one put the server to state UNINITIALIZED and send the respective schedule to the server. 
 
 	PUT http://127.0.0.1:8080/api/schedulerstate
 	
@@ -85,7 +85,7 @@ Then set the server state to running.
 Copyright (c) 2015, le1nux
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without
+Redistribution and use in source and binary forms, with or withoutu
 modification, are permitted provided that the following conditions are met:
 
 * Redistributions of source code must retain the above copyright notice, this
