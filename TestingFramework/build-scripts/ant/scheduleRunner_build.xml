@@ -4,7 +4,6 @@
 	<property name="build" location="build"/>
 	<property name="dist" location="dist"/>
 	<property name="libs" location="libs"/>
-	<property name="share" location="/var/www/html/TestingFramework" />
 	
 	<path id="class.path">
 	  <fileset dir="libs">
@@ -48,9 +47,4 @@
     <target name="run" depends= "jar">
         <java jar="${dist}/scheduleRunner.jar" fork="true" failonerror="true"/>
     </target>
-	
-	<target name="share" depends= "jar">
-	        <copy file="${dist}/scheduleRunner.jar" todir="${share}"/>
-	        <copy file="${dist}/Settings.xml" todir="${share}"/>
-	</target>
 </project>
