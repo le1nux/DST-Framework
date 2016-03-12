@@ -58,7 +58,7 @@ Payload:
 	}
 
 I know that this part is a little bit technical but the framework needed the variables types up front otherwise I couldn't parse them appropiately. 
-Let me get through this real quick: We can set up different schedules. Each schedule has a collections of tests. Later on we can decide which schedule to run (I think this still needs to be implemented). In the example above we only set up one schedule which included one test (SleepTest). Each test is identified by a testkey (package + class name) and has a list of parameters. In our case we only have the parameter duration which will make the test go to sleep for 3000ms while performing. 
+Let me get through this real quick: We can set up different schedules. Each schedule has a collections of tests. Later on we can decide which schedule to run (I think this still needs to be implemented). In the example above we only set up one schedule which included one test (SleepTest). Each test is identified by a testkey (package + class name) and has a list of parameters. In our case we only have the parameter duration which will make the test go to sleep for 3000ms while performing. If you want to dig a little deeper into the source code, go to  <a href="https://github.com/le1nux/DST-Framework/blob/master/TestingFramework/src/com/lue/client/tests/SleepTest.java" title="SleepTest">SleepTest</a> and its <a href="https://github.com/le1nux/DST-Framework/blob/master/TestingFramework/src/com/lue/client/tests/SleepTestParameters.java" title="SleepTestParameters class">SleepTestParameters class</a>. 
 
 After we have sent the schedule to the server the server went from state UNINITIALIZED to INITILIAZED which means we can run our test now. To do that we send the following request to the server:
 
