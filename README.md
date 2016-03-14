@@ -7,9 +7,10 @@ The framework in its current state has quite a few bugs, given the fact that it 
 ## Framework Structure 
 ![image](https://github.com/le1nux/DST-Framework/blob/master/overview/modules_overview.png?raw=true)
 
-The framework supports two pre-defined tests and two dummy tests
+The framework supports threee pre-defined tests and two dummy tests
  - REST API test using the standard HTTP Methods (GET, PUT, POST, DELETE)
  - SQL test 
+ - File Test (checks if e.g. a log file matches some given regular expression)
  - (Hello World test)
  - (Sleep test)
  
