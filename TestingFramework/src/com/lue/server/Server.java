@@ -3,6 +3,7 @@ package com.lue.server;
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
+import java.util.logging.Logger;
 
 import org.apache.catalina.LifecycleException;
 
@@ -16,16 +17,19 @@ public class Server {
 
 	protected Scheduler scheduler;
 	protected WebServer webServer;
-
+	protected Logger logger;
 
 	public Server() {
+		logger = Logger.getLogger(Server.class.getName());
+
 		try {
 			setUpScheduler();
-			new Controller(scheduler);
+			new Controller(scheduler);	// dummy controller if you don't want to use the REST interface you can build your own controller programmatically.
 		} catch (RemoteException | AlreadyBoundException e) {
 			e.printStackTrace();
 		}
 		setUpWebInterface();
+
 	}
 
 	private void setUpScheduler() throws RemoteException, AlreadyBoundException {
