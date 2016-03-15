@@ -18,4 +18,4 @@ public interface SchedulerDataAccessIF extends ObservableIF {
     public boolean isInitialized();
     public Scheduler.STATE getState();
     public void setState(Scheduler.STATE state) throws Exception;
-}
+ }
