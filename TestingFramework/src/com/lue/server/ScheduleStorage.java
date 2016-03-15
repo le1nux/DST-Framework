@@ -13,79 +13,76 @@ import com.lue.common.Schedule.ScheduleElement;
 
 @XmlRootElement
 public class ScheduleStorage implements Iterable<Schedule>{
-    @XmlElement
-    protected List<Schedule> schedules;
+	@XmlElement
+	protected List<Schedule> schedules;
 
-    public ScheduleStorage() {
-	schedules = new ArrayList<Schedule>();	
-    }
-
-    public static Schedule generateDebugSchedule() {
-	Schedule schedule= new Schedule();	
-	SleepTestParameters testParameters = new SleepTestParameters(2000);
-	ScheduleElement sleepTest = new ScheduleElement("com.lue.client.tests.SleepTest", testParameters, null);	
-	schedule.addScheduleElement(sleepTest);
-	
-	ScheduleElement instrumentatinTest = new ScheduleElement("com.lue.client.tests.android.InstrumentationTest", null, null);	
-	schedule.addScheduleElement(instrumentatinTest);
-	return schedule;
-    }
-
-    public static ScheduleStorage generateDebugScheduleStorage(int clientCount) {
-	ScheduleStorage cSchedule = new ScheduleStorage();
-	for(int i = 0; i < clientCount; i++){
-	    cSchedule.addEmptySchedule();
-	    cSchedule.putSchedule(i, generateDebugSchedule());
-	}
-	return cSchedule;
-    }
-
-    private void addEmptySchedule() {
-	schedules.add(new Schedule());
-    }
-    
-
-    public List<Schedule> getSchedules() {
-        return schedules;
-    }
-
-    public Schedule getSchedule(int scheduleRunnerId) {
-	if (schedules.size() > scheduleRunnerId)
-	    return schedules.get(scheduleRunnerId);
-	return null;
-    }
-
-    public boolean putSchedule(int scheduleRunnerId, Schedule schedule) {
-	if(schedules.size()<= scheduleRunnerId)
-	    return false;
-	schedules.set(scheduleRunnerId, schedule);
-	return true;
-    }
-
-    public Iterator<Schedule> iterator() {
-	return new ScheduleIterator();
-    }
-
-    private class ScheduleIterator implements Iterator<Schedule> {
-	int cursor;
-
-	public ScheduleIterator() {
-	    cursor = 0;
+	public ScheduleStorage() {
+		schedules = new ArrayList<Schedule>();	
 	}
 
-	@Override
-	public boolean hasNext() {
-	    return cursor < schedules.size();
+	public static Schedule generateDebugSchedule() {
+		Schedule schedule= new Schedule();	
+		SleepTestParameters testParameters = new SleepTestParameters(2000);
+		ScheduleElement sleepTest = new ScheduleElement("com.lue.client.tests.SleepTest", testParameters, null);	
+		schedule.addScheduleElement(sleepTest);
+		return schedule;
 	}
 
-	@Override
-	public Schedule next() {
-	    return schedules.get(cursor++);
+	public static ScheduleStorage generateDebugScheduleStorage(int clientCount) {
+		ScheduleStorage cSchedule = new ScheduleStorage();
+		for(int i = 0; i < clientCount; i++){
+			cSchedule.addEmptySchedule();
+			cSchedule.putSchedule(i, generateDebugSchedule());
+		}
+		return cSchedule;
 	}
-	
-	@Override
-	public void remove() {
-	    throw new UnsupportedOperationException();
+
+	private void addEmptySchedule() {
+		schedules.add(new Schedule());
 	}
-    }
+
+
+	public List<Schedule> getSchedules() {
+		return schedules;
+	}
+
+	public Schedule getSchedule(int scheduleRunnerId) {
+		if (schedules.size() > scheduleRunnerId)
+			return schedules.get(scheduleRunnerId);
+		return null;
+	}
+
+	public boolean putSchedule(int scheduleRunnerId, Schedule schedule) {
+		if(schedules.size()<= scheduleRunnerId)
+			return false;
+		schedules.set(scheduleRunnerId, schedule);
+		return true;
+	}
+
+	public Iterator<Schedule> iterator() {
+		return new ScheduleIterator();
+	}
+
+	private class ScheduleIterator implements Iterator<Schedule> {
+		int cursor;
+
+		public ScheduleIterator() {
+			cursor = 0;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return cursor < schedules.size();
+		}
+
+		@Override
+		public Schedule next() {
+			return schedules.get(cursor++);
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	}
 }
