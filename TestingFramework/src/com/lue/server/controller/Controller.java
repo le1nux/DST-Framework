@@ -18,98 +18,98 @@ import com.lue.server.SchedulerDataAccessIF;
 
 public class Controller implements ControllerIF {
 
-//    private final static String SCHEDULE_PATH = "schedule.json";
+	//    private final static String SCHEDULE_PATH = "schedule.json";
 
-    protected SchedulerDataAccessIF dataAccess;
-    protected Logger logger;
-    public Controller(SchedulerDataAccessIF dataAccess) {
-	logger = Logger.getLogger(ScheduleRunner.class.getName());
-	this.dataAccess = dataAccess;
-	dataAccess.addObserver(this);
-	control();
-    }
-
-
-    @Override
-    public void control() {
-	ScheduleStorage scheduleStorage;
-	scheduleStorage = ScheduleStorage.generateDebugScheduleStorage(dataAccess.getScheduleRunnerMaxCount());
-//	try {
-//	    writeScheduleToJSONFile(SCHEDULE_PATH, scheduleStorage);
-//	} catch (IOException e1) {
-//	    e1.printStackTrace();
-//	}
-//	try {
-//	    scheduleStorage = readScheduleFromJSONFile(SCHEDULE_PATH);
-//	} catch (IOException e) {
-//	    e.printStackTrace();
-//	}
-	try {
-	    dataAccess.setScheduleStorage(scheduleStorage);
-	} catch (Exception e) {
-	    e.printStackTrace();
+	protected SchedulerDataAccessIF dataAccess;
+	protected Logger logger;
+	public Controller(SchedulerDataAccessIF dataAccess) {
+		logger = Logger.getLogger(ScheduleRunner.class.getName());
+		this.dataAccess = dataAccess;
+		dataAccess.addObserver(this);
+		control();
 	}
-    }
 
-    public ScheduleStorage readScheduleFromJSONFile(String path) throws JsonMappingException, IOException {
-	logger.info("Parsing scheduler from file " + path + "...");
-	ScheduleStorage scheduleStorage = (ScheduleStorage) JsonProcessor.jsonFileToObject(path, ScheduleStorage.class);
-	return scheduleStorage;	
-    }
 
-    public void writeScheduleToJSONFile(String path, ScheduleStorage scheduleStorage) throws IOException {
-	logger.fine("Writing scheduler to file " + path + "...");
-	JsonProcessor.objectToJsonFile(path, scheduleStorage);
-    }
+	@Override
+	public void control() {
+		ScheduleStorage scheduleStorage;
+		scheduleStorage = ScheduleStorage.generateDebugScheduleStorage(dataAccess.getScheduleRunnerMaxCount());
+		//	try {
+		//	    writeScheduleToJSONFile(SCHEDULE_PATH, scheduleStorage);
+		//	} catch (IOException e1) {
+		//	    e1.printStackTrace();
+		//	}
+		//	try {
+		//	    scheduleStorage = readScheduleFromJSONFile(SCHEDULE_PATH);
+		//	} catch (IOException e) {
+		//	    e.printStackTrace();
+		//	}
+		try {
+			dataAccess.setScheduleStorage(scheduleStorage);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-    @Override
-    public void update() {
-	System.out.println("State changed to: " + dataAccess.getState());
-	if(dataAccess.getState() == Scheduler.STATE.INITIALIZED){
-	    try {
-		//		dataAccess.setState(Scheduler.STATE.RUNNING);
-	    } catch (Exception e) {
-		e.printStackTrace();
-	    }
+	public ScheduleStorage readScheduleFromJSONFile(String path) throws JsonMappingException, IOException {
+		logger.info("Parsing scheduler from file " + path + "...");
+		ScheduleStorage scheduleStorage = (ScheduleStorage) JsonProcessor.jsonFileToObject(path, ScheduleStorage.class);
+		return scheduleStorage;	
 	}
-	else if(dataAccess.getState() == Scheduler.STATE.FINISHED){
-	    ScheduleStorage c = dataAccess.getScheduleStorage();
-	    evaluateResult(c);
-	}
-    }
 
-    private void evaluateResult(ScheduleStorage cs) {
-	String evaluation = "";
-	int scheduleRunnerId = 0;
-	for(Schedule schedule : cs) {	// for each scheduleRunner:
-	    evaluation += "scheduleRunner: " + scheduleRunnerId + "\n";
-	    for(ScheduleElement scheduleElement : schedule.getSchedule()) { 	// for each performed test:
-		evaluation += "\tTest Identifier: " + scheduleElement.getTestKey() + "\n";
-		TestResult testResult = scheduleElement.getTestResult();
-		evaluation += testResultsToString("\t\t", testResult);
-	    }
-	    scheduleRunnerId++;
+	public void writeScheduleToJSONFile(String path, ScheduleStorage scheduleStorage) throws IOException {
+		logger.fine("Writing scheduler to file " + path + "...");
+		JsonProcessor.objectToJsonFile(path, scheduleStorage);
 	}
-	logger.info("RESULT:\n" + evaluation);
-    }
 
-    private String testResultsToString(String tabOffset, TestResult testResult) {
-	if(testResult == null) {
-	    return "";
+	@Override
+	public void update() {
+		System.out.println("State changed to: " + dataAccess.getState());
+		if(dataAccess.getState() == Scheduler.STATE.INITIALIZED){
+			try {	// TODO check these lines ...
+				//		dataAccess.setState(Scheduler.STATE.RUNNING);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		else if(dataAccess.getState() == Scheduler.STATE.FINISHED){
+			ScheduleStorage c = dataAccess.getScheduleStorage();
+			evaluateResult(c);
+		}
 	}
-	String resultString = "";
-	resultString += tabOffset + testResult.getTestKey() + ": " + testResult.getStatus() + "\t";
 
-	if(testResult.getStatus() == STATUS.ERROR) {
-	    resultString += "ERROR: " + testResult.getErrorMessage() + "\n"; 
-	} else if(testResult.getStatus() == STATUS.FAILURE) {
-	    resultString += "FAILURE: " + testResult.getFailureMessage()  + "\n"; 
-	}else if(testResult.getStatus() == STATUS.SUCCESS) {
-	    resultString += "\n";
+	private void evaluateResult(ScheduleStorage cs) {
+		String evaluation = "";
+		int scheduleRunnerId = 0;
+		for(Schedule schedule : cs) {	// for each scheduleRunner:
+			evaluation += "scheduleRunner: " + scheduleRunnerId + "\n";
+			for(ScheduleElement scheduleElement : schedule.getSchedule()) { 	// for each performed test:
+				evaluation += "\tTest Identifier: " + scheduleElement.getTestKey() + "\n";
+				TestResult testResult = scheduleElement.getTestResult();
+				evaluation += testResultsToString("\t\t", testResult);
+			}
+			scheduleRunnerId++;
+		}
+		logger.info("RESULT:\n" + evaluation);
 	}
-	for(TestResult t : testResult.getTestSubResults()){
-	    resultString += testResultsToString(tabOffset+"\t", t);
+
+	private String testResultsToString(String tabOffset, TestResult testResult) {
+		if(testResult == null) {
+			return "";
+		}
+		String resultString = "";
+		resultString += tabOffset + testResult.getTestKey() + ": " + testResult.getStatus() + "\t";
+
+		if(testResult.getStatus() == STATUS.ERROR) {
+			resultString += "ERROR: " + testResult.getErrorMessage() + "\n"; 
+		} else if(testResult.getStatus() == STATUS.FAILURE) {
+			resultString += "FAILURE: " + testResult.getFailureMessage()  + "\n"; 
+		}else if(testResult.getStatus() == STATUS.SUCCESS) {
+			resultString += "\n";
+		}
+		for(TestResult t : testResult.getTestSubResults()){
+			resultString += testResultsToString(tabOffset+"\t", t);
+		}
+		return resultString;
 	}
-	return resultString;
-    }
 }
