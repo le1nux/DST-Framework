@@ -41,14 +41,11 @@ public class ScheduleStorage implements Iterable<Schedule>{
 		schedules.add(new Schedule());
 	}
 
-
-	public List<Schedule> getSchedules() {
-		return schedules;
-	}
-
 	public Schedule getSchedule(int scheduleRunnerId) {
-		if (schedules.size() > scheduleRunnerId)
-			return schedules.get(scheduleRunnerId);
+		for(Schedule s : schedules) {
+			if(s.getScheduleRunnerId() == scheduleRunnerId)
+				return s;
+		}
 		return null;
 	}
 
