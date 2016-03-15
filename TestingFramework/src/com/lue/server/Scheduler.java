@@ -30,21 +30,20 @@ public class Scheduler implements SchedulerRmiIF, SchedulerDataAccessIF{
 	protected SupportedTests supportedTests;
 	protected Registry registry;
 	protected ScheduleStorage scheduleStorage;
-	protected int scheduleRunnerCount;
 	protected int registryPort;
 	protected STATE state;
 	protected List<ObserverIF> observers;
 
-	public Scheduler(int scheduleRunnerCount, int registryPort) throws RemoteException, AlreadyBoundException {
+	public Scheduler(int registryPort) throws RemoteException, AlreadyBoundException {
 		state = STATE.UNINITIALIZED;
-		this.scheduleRunnerCount = scheduleRunnerCount;
 		this.registryPort = registryPort;
 		scheduleRunners = new ScheduleRunnerStorage();
 		observers = new ArrayList<>();
 		setUpLogger();
 		setUpRegistry();
-		logger.log(Level.INFO, "Scheduler instantiated. Waiting for scheduleRunners to connect...");
 		runScheduleRunnerAliveThread();
+		System.out.println("Scheduler instantiated!");
+		isInitialized(); // to print the first line that tells the user what is missing.
 	}
 
 	private void setUpLogger() {
@@ -99,19 +98,13 @@ public class Scheduler implements SchedulerRmiIF, SchedulerDataAccessIF{
 	}
 
 	@Override
-	public int registerScheduleRunner(ScheduleRunnerIF scheduleRunner) throws Exception {
-		int id = -1;
-		if(scheduleRunnerCount > scheduleRunners.getCount()){
-			id = scheduleRunners.addScheduleRunner(scheduleRunner);	
-			if(supportedTests == null){	// TODO needs to get tested!
-				supportedTests = scheduleRunner.getSupportedTests();
-			}
-			supportedTests.intersectSupportedTests(scheduleRunner.getSupportedTests());
-			logger.log(Level.INFO, "" + scheduleRunners.getCount() + " scheduleRunners connected.");
+	public void registerScheduleRunner(ScheduleRunnerIF scheduleRunner) throws Exception {
+		scheduleRunners.addScheduleRunner(scheduleRunner);	// this throws an exception if scheduleRunner already exists with given id!
+		if(supportedTests == null){	// TODO needs to get tested!
+			supportedTests = scheduleRunner.getSupportedTests();
 		}
-		else {
-			throw new Exception("Error: scheduleRunner connection rejected! Already " + scheduleRunnerCount +  "/" + scheduleRunners.getCount() + " connected.");
-		}
+		supportedTests.intersectSupportedTests(scheduleRunner.getSupportedTests());
+		logger.log(Level.INFO, "ScheduleRunner " + scheduleRunner.getId() + " connected.");
 		new Thread() {		// TODO need to think this through!
 			public void run() {
 				if(isInitialized()) {
@@ -123,7 +116,6 @@ public class Scheduler implements SchedulerRmiIF, SchedulerDataAccessIF{
 				}
 			}
 		}.start();
-		return id;
 	}
 
 	@Override
@@ -149,7 +141,26 @@ public class Scheduler implements SchedulerRmiIF, SchedulerDataAccessIF{
 	 * is initialized if all scheduleRunners are connected and schedule is present
 	 */
 	public boolean isInitialized() {
-		return scheduleRunners.getCount() == scheduleRunnerCount && scheduleStorage != null;
+		boolean status = true;
+		if(scheduleStorage == null){
+			status = false;
+			System.out.println("SCHEDULER STATUS: NOT INITIALIZED");
+			System.out.println("\tSchedules not set, yet!");
+		}
+		else {
+			for(Schedule s : scheduleStorage) {
+				int id = s.getScheduleRunnerId();
+				if(scheduleRunners.getScheduleRunnerById(id) == null) {
+					if(status == true){
+						System.out.println("SCHEDULER STATUS: NOT INITIALIZED");
+						System.out.println("\tSchedules: set");
+					}
+					System.out.println("\tMissing ScheduleRunner: " + id);
+					status = false;
+				}
+			}
+		}
+		return status;
 	}
 
 	private boolean isFinished() {
@@ -167,15 +178,13 @@ public class Scheduler implements SchedulerRmiIF, SchedulerDataAccessIF{
 
 	private void runSchedule() {
 		logger.log(Level.INFO, "Pushing schedule...");
-		int counter = 0;
-		for(ScheduleRunnerIF scheduleRunner : scheduleRunners){
-			Schedule s = scheduleStorage.getSchedule(counter);
+		for(Schedule s : scheduleStorage){
+			ScheduleRunnerIF scheduleRunner = scheduleRunners.getScheduleRunnerById(s.getScheduleRunnerId());
 			try {
 				scheduleRunner.pushSchedule(s);
 			} catch (RemoteException | UnitTestException e) {
 				e.printStackTrace();
 			}	    
-			counter ++;
 		}
 		logger.log(Level.INFO, "Running schedule...");;
 		for(ScheduleRunnerIF scheduleRunner : scheduleRunners) {
@@ -193,11 +202,8 @@ public class Scheduler implements SchedulerRmiIF, SchedulerDataAccessIF{
 
 	@Override
 	public void setScheduleStorage(ScheduleStorage scheduleStorage) throws Exception {
-		if(scheduleStorage.getSchedules().size() == scheduleRunnerCount){
-			this.scheduleStorage = scheduleStorage;
-		}else {
-			throw new Exception("ERROR: Schedule count does not match scheduleRunner count!");
-		}
+		this.scheduleStorage = scheduleStorage;
+		logger.info("Accepted new schedule.");
 		if(isInitialized()) {
 			try {
 				setState(STATE.INITIALIZED);
@@ -211,30 +217,32 @@ public class Scheduler implements SchedulerRmiIF, SchedulerDataAccessIF{
 		return supportedTests;
 	}
 
-	public synchronized List<ScheduleRunnerIF> getTestRunners() {
+	public synchronized List<ScheduleRunnerIF> getScheduleRunners() {
 		return scheduleRunners.getScheduleRunners();
 	}
 
 	/*
 	 * Deletes the schedule at the scheduleRunners' side
 	 */
-	private void abortRunningTest() {		// TODO might be deleted...
-		for(int scheduleRunnerId = 0; scheduleRunnerId < scheduleRunners.getCount(); scheduleRunnerId++) {
-			try {
-				scheduleRunners.getScheduleRunnerById(scheduleRunnerId).resetSchedule();
-			} catch (RemoteException e){
-				e.printStackTrace();
-			}
-		}
-	}
+//	private void abortRunningTest() {		// TODO might be deleted...
+//		for(int scheduleRunnerId = 0; scheduleRunnerId < scheduleRunners.getCount(); scheduleRunnerId++) {
+//			try {
+//				scheduleRunners.getScheduleRunnerById(scheduleRunnerId).resetSchedule();
+//			} catch (RemoteException e){
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 
 	private void runScheduleRunnerAliveThread() {
 		new Thread() {
 			public void run() {
 				while(true) {
 					List<Integer> deadRunners = scheduleRunners.checkDeadScheduleRunners();
-					for(int id : deadRunners)
+					for(int id : deadRunners){
 						scheduleRunners.removeScheduleRunnerById(id);
+						System.out.println("Removed ScheduleRunner " + id + " due to connection loss.");
+					}						
 					if(state != STATE.UNINITIALIZED && !isInitialized()) {
 						try {
 							setState(STATE.UNINITIALIZED);
@@ -277,15 +285,5 @@ public class Scheduler implements SchedulerRmiIF, SchedulerDataAccessIF{
 	@Override
 	public ScheduleStorage getScheduleStorage() {
 		return scheduleStorage;
-	}
-
-	@Override
-	public int getScheduleRunnerCount() {
-		return scheduleRunners.getCount();
-	}
-
-	@Override
-	public int getScheduleRunnerMaxCount() {
-		return scheduleRunnerCount;
 	}
 }
