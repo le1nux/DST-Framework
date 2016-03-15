@@ -32,8 +32,8 @@ public class Controller implements ControllerIF {
 
 	@Override
 	public void control() {
-		ScheduleStorage scheduleStorage;
-		scheduleStorage = ScheduleStorage.generateDebugScheduleStorage(dataAccess.getScheduleRunnerMaxCount());
+		// ScheduleStorage scheduleStorage;
+		//scheduleStorage = ScheduleStorage.generateDebugScheduleStorage(dataAccess.getScheduleRunnerMaxCount());
 		//	try {
 		//	    writeScheduleToJSONFile(SCHEDULE_PATH, scheduleStorage);
 		//	} catch (IOException e1) {
@@ -44,11 +44,11 @@ public class Controller implements ControllerIF {
 		//	} catch (IOException e) {
 		//	    e.printStackTrace();
 		//	}
-		try {
-			dataAccess.setScheduleStorage(scheduleStorage);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		//		try {
+		//			dataAccess.setScheduleStorage(scheduleStorage);
+		//		} catch (Exception e) {
+		//			e.printStackTrace();
+		//		}
 	}
 
 	public ScheduleStorage readScheduleFromJSONFile(String path) throws JsonMappingException, IOException {
@@ -80,15 +80,13 @@ public class Controller implements ControllerIF {
 
 	private void evaluateResult(ScheduleStorage cs) {
 		String evaluation = "";
-		int scheduleRunnerId = 0;
 		for(Schedule schedule : cs) {	// for each scheduleRunner:
-			evaluation += "scheduleRunner: " + scheduleRunnerId + "\n";
+			evaluation += "scheduleRunner: " + schedule.getScheduleRunnerId() + "\n";
 			for(ScheduleElement scheduleElement : schedule.getSchedule()) { 	// for each performed test:
 				evaluation += "\tTest Identifier: " + scheduleElement.getTestKey() + "\n";
 				TestResult testResult = scheduleElement.getTestResult();
 				evaluation += testResultsToString("\t\t", testResult);
 			}
-			scheduleRunnerId++;
 		}
 		logger.info("RESULT:\n" + evaluation);
 	}

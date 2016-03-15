@@ -8,9 +8,7 @@ import com.lue.common.util.ObservableIF;
 
 public interface SchedulerDataAccessIF extends ObservableIF {
     public SupportedTests getSupportedTests();
-    public List<? extends ScheduleRunnerIF> getTestRunners();
-    public int getScheduleRunnerCount();
-    public int getScheduleRunnerMaxCount();
+    public List<? extends ScheduleRunnerIF> getScheduleRunners();
     
     public ScheduleStorage getScheduleStorage();
     public void setScheduleStorage(ScheduleStorage scheduleStorage) throws Exception;

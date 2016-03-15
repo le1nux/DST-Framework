@@ -24,7 +24,7 @@ public class ScheduleRunnersServlet extends ApiServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	response.setContentType("application/json");
 	PrintWriter out = response.getWriter();
-	List<? extends NameIF> scheduleRunners = dataAccess.getTestRunners();
+	List<? extends NameIF> scheduleRunners = dataAccess.getScheduleRunners();
 	List<String> scheduleRunnersRep = new ArrayList<>();
 	for(final NameIF client : scheduleRunners){
 	    scheduleRunnersRep.add(client.getName());
