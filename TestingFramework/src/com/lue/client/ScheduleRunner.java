@@ -136,4 +136,18 @@ public class ScheduleRunner extends UnicastRemoteObject implements ScheduleRunne
     public String getName() {
 	return "HardCoded Name";
     }
+
+    /**
+     * This method gets called by the server. It always returns true so the server can check 
+     * if the scheduleRunner is still connected.
+     */
+	@Override
+	public boolean isAlive() throws RemoteException {
+		return false;
+	}
+
+	@Override
+	public int getId() throws RemoteException {
+		return scheduleRunnerId;
+	}
 }
