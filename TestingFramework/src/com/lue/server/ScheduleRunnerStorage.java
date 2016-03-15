@@ -5,56 +5,46 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.lue.client.ScheduleRunnerIF;
 
 public class ScheduleRunnerStorage implements Iterable<ScheduleRunnerIF>{
-	protected ArrayList<ScheduleRunnerIF> scheduleRunners;
+	protected TreeMap<Integer, ScheduleRunnerIF> scheduleRunners;
 
 	public ScheduleRunnerStorage() {
-		scheduleRunners = new ArrayList<>();
-	}
-
-	public int getCount() {
-		int count = 0;
-		for(ScheduleRunnerIF r : scheduleRunners)
-			count += (r != null)?1:0;
-		return count;
+		scheduleRunners = new TreeMap<>();
 	}
 
 	public ScheduleRunnerIF getScheduleRunnerById(int id) {
-		if(id < scheduleRunners.size())
-			return scheduleRunners.get(id);
-		else 
-			return null;
+		return scheduleRunners.get(id);
 	}	
 
 	public List<ScheduleRunnerIF> getScheduleRunners() {
-		return scheduleRunners;
+		return new ArrayList<ScheduleRunnerIF>(scheduleRunners.values());
 	}	
 
 	public void removeScheduleRunnerById(int id) {
-		if(id < scheduleRunners.size()) {
-			scheduleRunners.set(id, null);
-		}
+		scheduleRunners.remove(id);
 	}	
 
-	public int addScheduleRunner(ScheduleRunnerIF scheduleRunner) {
-		scheduleRunners.add(scheduleRunner);
-		return scheduleRunners.size()-1;
+	public void addScheduleRunner(ScheduleRunnerIF scheduleRunner) throws Exception {
+		if(scheduleRunners.containsKey(scheduleRunner.getId()))
+			throw new Exception("ERROR: ScheduleRunner with id " + scheduleRunner.getId() + " already connected!");
+		scheduleRunners.put(scheduleRunner.getId(), scheduleRunner);
 	}	
 
 	public List<Integer> checkDeadScheduleRunners() {
 		ArrayList<Integer> deadRunners = new ArrayList<>();
-		for(int i = 0; i < scheduleRunners.size(); i++) {
-			ScheduleRunnerIF scheduleRunner = scheduleRunners.get(i);
-			if (scheduleRunner != null) {
-				try {
-					scheduleRunner.isAlive();	// throws RemoteException if connection lost
-				} catch (RemoteException e) {
-					System.out.println("Lost connection to schedulRunner " + i);
-					deadRunners.add(i);
-				}
+		for(Map.Entry<Integer,ScheduleRunnerIF> entry : scheduleRunners.entrySet()) {
+			Integer id = entry.getKey();
+			ScheduleRunnerIF scheduleRunner = entry.getValue();
+			try {
+				scheduleRunner.isAlive();	// throws RemoteException if connection lost
+			} catch (RemoteException e) {
+				System.out.println("Lost connection to schedulRunner " + id);
+				deadRunners.add(id);
 			}
 		}
 		return deadRunners;
@@ -64,24 +54,27 @@ public class ScheduleRunnerStorage implements Iterable<ScheduleRunnerIF>{
 	public Iterator<ScheduleRunnerIF> iterator() {
 		return new StorageIterator();
 	}
-	
+
 	public class StorageIterator implements Iterator<ScheduleRunnerIF> {
 		int current = -1;
-		
-	    public boolean hasNext() {
-	    	return scheduleRunners.size()-1 > current; 	    
-	    }
+		List<ScheduleRunnerIF> scheduleRunnersList;
 
-	    public ScheduleRunnerIF next() {
-	    	current++;
-	    	return scheduleRunners.get(current);
-	    }
+		public StorageIterator() {
+			scheduleRunnersList = new ArrayList<>(scheduleRunners.values());
+		}
+
+		public boolean hasNext() {
+			return scheduleRunnersList.size()-1 > current; 	    
+		}
+
+		public ScheduleRunnerIF next() {
+			current++;
+			return scheduleRunnersList.get(current);
+		}
 
 		@Override
 		public void remove() {
 			// TODO Auto-generated method stub
 		}
-	    
 	}
-
 }
