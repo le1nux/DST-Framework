@@ -13,6 +13,8 @@ public interface SchedulerRmiIF extends Remote {
      * @throws AlreadyBoundException 
      * @throws Exception 
      */
-    int registerScheduleRunner(ScheduleRunnerIF client) throws RemoteException, AlreadyBoundException, Exception;
+    int registerScheduleRunner(ScheduleRunnerIF scheduleRunner) throws RemoteException, AlreadyBoundException, Exception;
     public void pushTestResult(int scheduleRunnerId, int testId, TestResult testResult) throws RemoteException;
+    
+    public void unregisterScheduleRunner(ScheduleRunnerIF scheduleRunner) throws RemoteException;
 }
