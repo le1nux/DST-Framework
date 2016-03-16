@@ -40,23 +40,36 @@ You'll be ask to give an id (integer) to the scheduleRunner. The id will be used
 
 Now its time to configure the server and start a test run. When we started our server, the server started another HTTP Tomcat server listening on port 8080 as a background thread. When we want to configure and perform our tests we always interact with the Tomcat server by communicating with its REST-API. We'll see how that works in the next few steps. 
 
-At first we send a list of the tests to perform including their parameters. 
+At first we send a list of the tests to perform including their parameters. To build and send the request below I used the Postman Chrome plugin (http://www.getpostman.com/).
 
 	PUT http://127.0.0.1:8080/api/schedulestorage
 
 Payload:
 
-	{	
-		"schedules" : [ "java.util.ArrayList", [ {
-			"scheduleRunnerId" :1,
-    			"schedule" : [ "java.util.ArrayList", [
- 			{
-				"testKey" : "com.lue.client.tests.SleepTest",
-				"parameters" : [ "com.lue.client.tests.SleepTestParameters", {
-					"duration" : 3000
-				} ]
-			}] ]
-		}]]
+	{
+	  "schedules": [
+	    "java.util.ArrayList",
+	    [
+	      {
+	        "scheduleRunnerId": 0,
+	        "schedule": [
+	          "java.util.ArrayList",
+	          [
+	            {
+	              "testKey": "com.lue.client.tests.SleepTest",
+	              "parameters": [
+	                "com.lue.client.tests.SleepTestParameters",
+	                {
+	                  "duration": 3000
+	                }
+	              ],
+	              "testResult": null
+	            }
+	          ]
+	        ]
+	      }
+	    ]
+	  ]
 	}
 
 I know that this part is a little bit technical but the framework needed the variables types up front otherwise I couldn't parse them appropiately. 
@@ -82,6 +95,120 @@ Payload:
 
 Then set the server state to running.
 
+
+## REST API Documentation
+
+### Scheduler State
+
+GET http://127.0.0.1:8080/api/schedulerstate
+	
+	returns "UNINITIALIZED", "INITIALIZED", "RUNNING", "FINISHED"
+
+PUT http://127.0.0.1:8080/api/schedulerstate
+	
+	"RUNNING"
+
+### Schedule Runners
+
+GET http://127.0.0.1:8080/api/schedulerunners
+
+returns list of the ids of all connected schedule runners.	
+
+	["1","5"]
+
+### Schedule Storage
+
+GET http://127.0.0.1:8080/api/schedulestorage
+
+	returns schedule storage (see below)
+
+PUT http://127.0.0.1:8080/api/schedulestorage
+
+	{
+	  "schedules": [
+	    "java.util.ArrayList",
+	    [
+	      {
+	        "scheduleRunnerId": 0,
+	        "schedule": [
+	          "java.util.ArrayList",
+	          [
+	            {
+	              "testKey": "com.lue.client.tests.SleepTest",
+	              "parameters": [
+	                "com.lue.client.tests.SleepTestParameters",
+	                {
+	                  "duration": 3000
+	                }
+	              ],
+	              "testResult": null
+	            }
+	          ]
+	        ]
+	      },
+	      {
+	        "scheduleRunnerId": 3,
+	        "schedule": [
+	          "java.util.ArrayList",
+	          [
+	            {
+	              "testKey": "com.lue.client.tests.SleepTest",
+	              "parameters": [
+	                "com.lue.client.tests.SleepTestParameters",
+	                {
+	                  "duration": 5000
+	                }
+	              ],
+	              "testResult": null
+	            }
+	          ]
+	        ]
+	      }
+	    ]
+	  ]
+	}
+
+### Test Result
+
+GET http://127.0.0.1:8080/api/testresults
+
+	{
+	  "scheduleRunners": [
+	    "java.util.ArrayList",
+	    [
+	      {
+	        "scheduleRunnerId": 0,
+	        "testResults": [
+	          "java.util.ArrayList",
+	          [
+	            {
+	              "testKey": "Aggregated Result",
+	              "status": "SUCCESS",
+	              "start": 1458134286899,
+	              "end": 1458134289905,
+	              "errorMessage": null,
+	              "failureMessage": null,
+	              "testSubResults": [
+	                {
+	                  "testKey": "SleepTest",
+	                  "status": "SUCCESS",
+	                  "start": 1458134286900,
+	                  "end": 1458134289900,
+	                  "errorMessage": null,
+	                  "failureMessage": null,
+	                  "testSubResults": []
+	                }
+	              ]
+	            }
+	          ]
+	        ]
+	      }
+	    ]
+	  ]
+	}
+### Supported Tests
+
+	TODO: needs to be documented.
 
 ##License
 Copyright (c) 2015, le1nux
