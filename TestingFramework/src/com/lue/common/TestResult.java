@@ -3,6 +3,8 @@ package com.lue.common;
 
 import java.util.ArrayList;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * Contains all the TestMethodResuls of ONE test class (for instance a instrumentation test class called MainActivityTest).
  */
@@ -11,6 +13,7 @@ public class TestResult extends Result implements ChangeListenerIF{
     private static final long serialVersionUID = 1L;
     ArrayList<TestResult> testSubResults;
     
+    @JsonIgnore
     ChangeListenerIF superResult;
 
     public TestResult() {
