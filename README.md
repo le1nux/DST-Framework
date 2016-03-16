@@ -35,8 +35,8 @@ start the server
 start the schedule runners
 
 	ant -buildfile scheduleRunner_build.xml run
-	
-The schedule runner automatically connects to the server and waits for further instructions (e.g. what tests to perform and when). 
+
+You'll be ask to give an id (integer) to the scheduleRunner. The id will be used to match the schedules to the respective scheduleRunner. Afterwards the schedule runner automatically connects to the server and waits for further instructions (e.g. what tests to perform and when). 
 
 Now its time to configure the server and start a test run. When we started our server, the server started another HTTP Tomcat server listening on port 8080 as a background thread. When we want to configure and perform our tests we always interact with the Tomcat server by communicating with its REST-API. We'll see how that works in the next few steps. 
 
@@ -46,8 +46,9 @@ At first we send a list of the tests to perform including their parameters.
 
 Payload:
 
-	{
+	{	
 		"schedules" : [ "java.util.ArrayList", [ {
+			"scheduleRunnerId" :1,
     			"schedule" : [ "java.util.ArrayList", [
  			{
 				"testKey" : "com.lue.client.tests.SleepTest",
@@ -59,7 +60,7 @@ Payload:
 	}
 
 I know that this part is a little bit technical but the framework needed the variables types up front otherwise I couldn't parse them appropiately. 
-Let me get through this real quick: We can set up different schedules. Each schedule has a collections of tests. Later on we can decide which schedule to run (I think this still needs to be implemented). In the example above we only set up one schedule which included one test (SleepTest). Each test is identified by a testkey (package + class name) and has a list of parameters. In our case we only have the parameter duration which will make the test go to sleep for 3000ms while performing. If you want to dig a little deeper into the source code, go to  <a href="https://github.com/le1nux/DST-Framework/blob/master/TestingFramework/src/com/lue/client/tests/SleepTest.java" title="SleepTest">SleepTest</a> and its <a href="https://github.com/le1nux/DST-Framework/blob/master/TestingFramework/src/com/lue/client/tests/SleepTestParameters.java" title="SleepTestParameters class">SleepTestParameters class</a>. 
+Let me get through this real quick: We can set up different schedules (one for each schedule runner). Each schedule has a collections of tests. In the example above we only set up one schedule which included one test (SleepTest). Each test is identified by a testkey (package + class name) and has a list of parameters. In our case we only have the parameter duration which will make the test go to sleep for 3000ms while performing. If you want to dig a little deeper into the source code, go to  <a href="https://github.com/le1nux/DST-Framework/blob/master/TestingFramework/src/com/lue/client/tests/SleepTest.java" title="SleepTest">SleepTest</a> and its <a href="https://github.com/le1nux/DST-Framework/blob/master/TestingFramework/src/com/lue/client/tests/SleepTestParameters.java" title="SleepTestParameters class">SleepTestParameters class</a>. 
 
 After we have sent the schedule to the server the server went from state UNINITIALIZED to INITILIAZED which means we can run our test now. To do that we send the following request to the server:
 
