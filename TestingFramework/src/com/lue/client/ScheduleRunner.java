@@ -137,10 +137,10 @@ public class ScheduleRunner extends UnicastRemoteObject implements ScheduleRunne
 		} while (true);
 	}
 
-	@Override
-	public String getName() {
-		return "HardCoded Name";
-	}
+//	@Override
+//	public String getName() {
+//		return "HardCoded Name";
+//	}
 
 	/**
 	 * This method gets called by the server. It always returns true so the server can check 
