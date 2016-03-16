@@ -21,7 +21,7 @@ public class SupportedTestsServlet extends ApiServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	response.setContentType("application/json");
 	PrintWriter out = response.getWriter();
-	out.println(JsonProcessor.toJson(dataAccess.getSupportedTests()));
+	out.println(JsonProcessor.toJson("API ENDPOINT NOT SUPPORTED ANYMORE"));
 	out.close();
     }  
 }
