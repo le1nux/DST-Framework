@@ -38,7 +38,7 @@ public class TestResultServlet extends ApiServlet{
 	ScheduleRunResult scheduleRunResult = new ScheduleRunResult();
 	
 	for(Schedule schedule : scheduleStorage) {
-	    ScheduleRunner scheduleRunner = new ScheduleRunner("FIX HARDCODED NAME");
+	    ScheduleRunner scheduleRunner = new ScheduleRunner(schedule.getScheduleRunnerId());
 	    scheduleRunResult.scheduleRunners.add(scheduleRunner);
 	    for(ScheduleElement scheduleElement : schedule) {
 		String key = scheduleElement.getTestKey();
@@ -61,18 +61,18 @@ public class TestResultServlet extends ApiServlet{
 	
 	public static class ScheduleRunner implements Serializable {
 	    private static final long serialVersionUID = 1L;
-	    String testRunner;
+	    int scheduleRunnerId;
 	    List<TestResult> testResults;
 	    
-	    public ScheduleRunner(String testRunner) {
-		this.testRunner = testRunner;
+	    public ScheduleRunner(int scheduleRunnerId) {
+		this.scheduleRunnerId = scheduleRunnerId;
 		testResults = new ArrayList<TestResult>();
 	    }
-	    public String getTestRunner() {
-	        return testRunner;
+	    public int getScheduleRunnerId() {
+	        return scheduleRunnerId;
 	    }
-	    public void setTestRunner(String testRunner) {
-	        this.testRunner = testRunner;
+	    public void setTestRunner(int scheduleRunnerId) {
+	        this.scheduleRunnerId = scheduleRunnerId;
 	    }
 	    public List<TestResult> getTestResults() {
 	        return testResults;
