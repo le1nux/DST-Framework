@@ -35,31 +35,45 @@ start the server
 start the schedule runners
 
 	ant -buildfile scheduleRunner_build.xml run
-	
-The schedule runner automatically connects to the server and waits for further instructions (e.g. what tests to perform and when). 
+
+You'll be ask to give an id (integer) to the scheduleRunner. The id will be used to match the schedules to the respective scheduleRunner. Afterwards the schedule runner automatically connects to the server and waits for further instructions (e.g. what tests to perform and when). 
 
 Now its time to configure the server and start a test run. When we started our server, the server started another HTTP Tomcat server listening on port 8080 as a background thread. When we want to configure and perform our tests we always interact with the Tomcat server by communicating with its REST-API. We'll see how that works in the next few steps. 
 
-At first we send a list of the tests to perform including their parameters. 
+At first we send a list of the tests to perform including their parameters. To build and send the request below I used the Postman Chrome plugin (http://www.getpostman.com/).
 
 	PUT http://127.0.0.1:8080/api/schedulestorage
 
 Payload:
 
 	{
-		"schedules" : [ "java.util.ArrayList", [ {
-    			"schedule" : [ "java.util.ArrayList", [
- 			{
-				"testKey" : "com.lue.client.tests.SleepTest",
-				"parameters" : [ "com.lue.client.tests.SleepTestParameters", {
-					"duration" : 3000
-				} ]
-			}] ]
-		}]]
+	  "schedules": [
+	    "java.util.ArrayList",
+	    [
+	      {
+	        "scheduleRunnerId": 0,
+	        "schedule": [
+	          "java.util.ArrayList",
+	          [
+	            {
+	              "testKey": "com.lue.client.tests.SleepTest",
+	              "parameters": [
+	                "com.lue.client.tests.SleepTestParameters",
+	                {
+	                  "duration": 3000
+	                }
+	              ],
+	              "testResult": null
+	            }
+	          ]
+	        ]
+	      }
+	    ]
+	  ]
 	}
 
 I know that this part is a little bit technical but the framework needed the variables types up front otherwise I couldn't parse them appropiately. 
-Let me get through this real quick: We can set up different schedules. Each schedule has a collections of tests. Later on we can decide which schedule to run (I think this still needs to be implemented). In the example above we only set up one schedule which included one test (SleepTest). Each test is identified by a testkey (package + class name) and has a list of parameters. In our case we only have the parameter duration which will make the test go to sleep for 3000ms while performing. If you want to dig a little deeper into the source code, go to  <a href="https://github.com/le1nux/DST-Framework/blob/master/TestingFramework/src/com/lue/client/tests/SleepTest.java" title="SleepTest">SleepTest</a> and its <a href="https://github.com/le1nux/DST-Framework/blob/master/TestingFramework/src/com/lue/client/tests/SleepTestParameters.java" title="SleepTestParameters class">SleepTestParameters class</a>. 
+Let me get through this real quick: We can set up different schedules (one for each schedule runner). Each schedule has a collections of tests. In the example above we only set up one schedule which included one test (SleepTest). Each test is identified by a testkey (package + class name) and has a list of parameters. In our case we only have the parameter duration which will make the test go to sleep for 3000ms while performing. If you want to dig a little deeper into the source code, go to  <a href="https://github.com/le1nux/DST-Framework/blob/master/TestingFramework/src/com/lue/client/tests/SleepTest.java" title="SleepTest">SleepTest</a> and its <a href="https://github.com/le1nux/DST-Framework/blob/master/TestingFramework/src/com/lue/client/tests/SleepTestParameters.java" title="SleepTestParameters class">SleepTestParameters class</a>. 
 
 After we have sent the schedule to the server the server went from state UNINITIALIZED to INITILIAZED which means we can run our test now. To do that we send the following request to the server:
 
@@ -81,6 +95,120 @@ Payload:
 
 Then set the server state to running.
 
+
+## REST API Documentation
+
+### Scheduler State
+
+GET http://127.0.0.1:8080/api/schedulerstate
+	
+	returns "UNINITIALIZED", "INITIALIZED", "RUNNING", "FINISHED"
+
+PUT http://127.0.0.1:8080/api/schedulerstate
+	
+	"RUNNING"
+
+### Schedule Runners
+
+GET http://127.0.0.1:8080/api/schedulerunners
+
+returns list of the ids of all connected schedule runners.	
+
+	["1","5"]
+
+### Schedule Storage
+
+GET http://127.0.0.1:8080/api/schedulestorage
+
+	returns schedule storage (see below)
+
+PUT http://127.0.0.1:8080/api/schedulestorage
+
+	{
+	  "schedules": [
+	    "java.util.ArrayList",
+	    [
+	      {
+	        "scheduleRunnerId": 0,
+	        "schedule": [
+	          "java.util.ArrayList",
+	          [
+	            {
+	              "testKey": "com.lue.client.tests.SleepTest",
+	              "parameters": [
+	                "com.lue.client.tests.SleepTestParameters",
+	                {
+	                  "duration": 3000
+	                }
+	              ],
+	              "testResult": null
+	            }
+	          ]
+	        ]
+	      },
+	      {
+	        "scheduleRunnerId": 3,
+	        "schedule": [
+	          "java.util.ArrayList",
+	          [
+	            {
+	              "testKey": "com.lue.client.tests.SleepTest",
+	              "parameters": [
+	                "com.lue.client.tests.SleepTestParameters",
+	                {
+	                  "duration": 5000
+	                }
+	              ],
+	              "testResult": null
+	            }
+	          ]
+	        ]
+	      }
+	    ]
+	  ]
+	}
+
+### Test Result
+
+GET http://127.0.0.1:8080/api/testresults
+
+	{
+	  "scheduleRunners": [
+	    "java.util.ArrayList",
+	    [
+	      {
+	        "scheduleRunnerId": 0,
+	        "testResults": [
+	          "java.util.ArrayList",
+	          [
+	            {
+	              "testKey": "Aggregated Result",
+	              "status": "SUCCESS",
+	              "start": 1458134286899,
+	              "end": 1458134289905,
+	              "errorMessage": null,
+	              "failureMessage": null,
+	              "testSubResults": [
+	                {
+	                  "testKey": "SleepTest",
+	                  "status": "SUCCESS",
+	                  "start": 1458134286900,
+	                  "end": 1458134289900,
+	                  "errorMessage": null,
+	                  "failureMessage": null,
+	                  "testSubResults": []
+	                }
+	              ]
+	            }
+	          ]
+	        ]
+	      }
+	    ]
+	  ]
+	}
+### Supported Tests
+
+	TODO: needs to be documented.
 
 ##License
 Copyright (c) 2015, le1nux
