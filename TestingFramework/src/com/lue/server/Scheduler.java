@@ -170,15 +170,18 @@ public class Scheduler implements SchedulerRmiIF, SchedulerDataAccessIF{
 		return true;
 	}
 
-	private void runSchedule() {
+	private void runSchedule() throws Exception {
 		logger.log(Level.INFO, "Pushing schedule...");
 		for(Schedule s : scheduleStorage){
 			ScheduleRunnerIF scheduleRunner = scheduleRunners.getScheduleRunnerById(s.getScheduleRunnerId());
 			try {
 				scheduleRunner.pushSchedule(s);
-			} catch (RemoteException | UnitTestException e) {
+			} catch (UnitTestException e) {
+				System.out.println("ERROR: scheduleRunner " + scheduleRunner.getId() + " did not accept the schedule. Going back to state UNINITIALIZED!");
 				e.printStackTrace();
-			}	    
+				setState(STATE.UNINITIALIZED);
+				return;
+			}
 		}
 		logger.log(Level.INFO, "Running schedule...");;
 		for(ScheduleRunnerIF scheduleRunner : scheduleRunners) {
@@ -214,15 +217,15 @@ public class Scheduler implements SchedulerRmiIF, SchedulerDataAccessIF{
 	/*
 	 * Deletes the schedule at the scheduleRunners' side
 	 */
-//	private void abortRunningTest() {		// TODO might be deleted...
-//		for(int scheduleRunnerId = 0; scheduleRunnerId < scheduleRunners.getCount(); scheduleRunnerId++) {
-//			try {
-//				scheduleRunners.getScheduleRunnerById(scheduleRunnerId).resetSchedule();
-//			} catch (RemoteException e){
-//				e.printStackTrace();
-//			}
-//		}
-//	}
+	//	private void abortRunningTest() {		// TODO might be deleted...
+	//		for(int scheduleRunnerId = 0; scheduleRunnerId < scheduleRunners.getCount(); scheduleRunnerId++) {
+	//			try {
+	//				scheduleRunners.getScheduleRunnerById(scheduleRunnerId).resetSchedule();
+	//			} catch (RemoteException e){
+	//				e.printStackTrace();
+	//			}
+	//		}
+	//	}
 
 	private void runScheduleRunnerAliveThread() {
 		new Thread() {
