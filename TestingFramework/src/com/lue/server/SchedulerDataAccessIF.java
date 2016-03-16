@@ -3,11 +3,9 @@ package com.lue.server;
 import java.util.List;
 
 import com.lue.client.ScheduleRunnerIF;
-import com.lue.common.SupportedTests;
 import com.lue.common.util.ObservableIF;
 
 public interface SchedulerDataAccessIF extends ObservableIF {
-    public SupportedTests getSupportedTests();
     public List<? extends ScheduleRunnerIF> getScheduleRunners();
     
     public ScheduleStorage getScheduleStorage();

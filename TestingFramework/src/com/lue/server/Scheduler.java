@@ -15,7 +15,6 @@ import com.lue.client.ScheduleRunnerIF;
 import com.lue.common.Result;
 import com.lue.common.Schedule;
 import com.lue.common.Schedule.ScheduleElement;
-import com.lue.common.SupportedTests;
 import com.lue.common.TestResult;
 import com.lue.common.UnitTestException;
 import com.lue.common.util.ObserverIF;
@@ -27,7 +26,6 @@ public class Scheduler implements SchedulerRmiIF, SchedulerDataAccessIF{
 	public static enum STATE {UNINITIALIZED, INITIALIZED, RUNNING, FINISHED};
 
 	protected ScheduleRunnerStorage scheduleRunners;
-	protected SupportedTests supportedTests;
 	protected Registry registry;
 	protected ScheduleStorage scheduleStorage;
 	protected int registryPort;
@@ -100,10 +98,6 @@ public class Scheduler implements SchedulerRmiIF, SchedulerDataAccessIF{
 	@Override
 	public void registerScheduleRunner(ScheduleRunnerIF scheduleRunner) throws Exception {
 		scheduleRunners.addScheduleRunner(scheduleRunner);	// this throws an exception if scheduleRunner already exists with given id!
-		if(supportedTests == null){	// TODO needs to get tested!
-			supportedTests = scheduleRunner.getSupportedTests();
-		}
-		supportedTests.intersectSupportedTests(scheduleRunner.getSupportedTests());
 		logger.log(Level.INFO, "ScheduleRunner " + scheduleRunner.getId() + " connected.");
 		new Thread() {		// TODO need to think this through!
 			public void run() {
@@ -211,10 +205,6 @@ public class Scheduler implements SchedulerRmiIF, SchedulerDataAccessIF{
 				e.printStackTrace();
 			}
 		}
-	}
-
-	public synchronized SupportedTests getSupportedTests() {
-		return supportedTests;
 	}
 
 	public synchronized List<ScheduleRunnerIF> getScheduleRunners() {
